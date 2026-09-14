@@ -1,0 +1,30 @@
+# wordwork —— Windows 单机部署的 Caddy 配置
+#
+# 由 scripts/windows/install.ps1 复制到 C:\ProgramData\wordwork\Caddyfile。
+# 所有 {$...} 都是环境变量，运行服务时由 WinSW 注入。
+# 要改配置请改 C:\ProgramData\wordwork\wordwork.env，然后重新运行 install.ps1。
+{
+	# 内部 CA 和签出来的证书都放在这个固定目录，方便把根证书导给学生的机器。
+	storage file_system "{$WORDWORK_CADDY_STORAGE}"
+
+	# 这里没有域名、只用 IP 访问，而且对外用的是非 443 端口，
+	# 那条 HTTP→HTTPS 跳转毫无意义，还会去占 80 端口。关掉。
+	auto_https disable_redirects
+}
+
+# 一个站点块覆盖三个地址：公网 IP、局域网 IP、本机回环。
+# 三者共用同一张证书，SAN 里会同时带上这三个 IP，
+# 所以学生走外网、走局域网，以及你自己在本机验证走的都是同一份证书。
+https://{$WORDWORK_PUBLIC_HOST}:{$WORDWORK_PUBLIC_PORT}, https://{$WORDWORK_LAN_HOST}:{$WORDWORK_PUBLIC_PORT}, https://127.0.0.1:{$WORDWORK_PUBLIC_PORT} {
+	tls internal
+
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:{$WORDWORK_API_PORT}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+}

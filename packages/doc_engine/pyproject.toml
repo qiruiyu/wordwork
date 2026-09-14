@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wordwork-doc-engine"
+version = "0.2.1"
+description = "Safe, deterministic OOXML diff and merge primitives for wordwork"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [{name = "wordwork"}]
+dependencies = []
+
+[project.optional-dependencies]
+redlines = ["python-redlines>=0.3"]
+revisions = ["docx-revisions"]
+test = ["pytest>=8"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

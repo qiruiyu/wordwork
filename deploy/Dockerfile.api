@@ -1,0 +1,13 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /opt/wordwork
+COPY packages/doc_engine ./packages/doc_engine
+COPY services/api ./services/api
+RUN pip install --no-cache-dir ./packages/doc_engine "./services/api"
+
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--app-dir", "services/api", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+

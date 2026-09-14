@@ -1,0 +1,31 @@
+[package]
+name = "wordwork-desktop"
+version = "0.2.0"
+description = "wordwork desktop companion"
+authors = ["wordwork"]
+edition = "2021"
+rust-version = "1.77"
+
+# 产物名与 tauri.conf.json 的 productName、README 里给用户看的 wordwork.exe 保持一致。
+[[bin]]
+name = "wordwork"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
